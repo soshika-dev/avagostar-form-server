@@ -20,6 +20,8 @@
 main
 app
 server
+!cmd/server/
+!cmd/server/**
 bin/
 dist/
 build/
