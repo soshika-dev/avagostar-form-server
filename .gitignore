@@ -1,0 +1,100 @@
+# =========================
+# Go / Gin
+# =========================
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build outputs
+*.test
+*.out
+*.a
+*.o
+*.prof
+*.pprof
+*.coverprofile
+
+# Binaries (common names)
+main
+app
+server
+bin/
+dist/
+build/
+
+# Go workspace / modules
+vendor/
+go.work
+go.work.sum
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# =========================
+# Environment / secrets
+# =========================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+secrets/
+config.local.*
+local.settings.*
+
+# =========================
+# Logs / runtime
+# =========================
+logs/
+*.log
+
+# tmp/cache
+tmp/
+temp/
+.cache/
+
+# =========================
+# Database (PostgreSQL)
+# =========================
+# Local DB dumps / backups
+*.sql
+*.dump
+*.backup
+
+# If you store postgres data locally (docker bind mount)
+postgres-data/
+pgdata/
+data/postgres/
+db-data/
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+**/.docker/
+
+# =========================
+# Linux / Ubuntu
+# =========================
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =========================
+# Testing / Coverage
+# =========================
+coverage/
+*.cover
