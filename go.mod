@@ -1,6 +1,6 @@
 module avagostar-form-server
 
-go 1.21
+go 1.24.0
 
 require (
 	github.com/gin-gonic/gin v1.11.0
@@ -8,6 +8,8 @@ require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.41.0
+	gorm.io/driver/postgres v1.6.0
+	gorm.io/gorm v1.31.0
 )
 
 require (
