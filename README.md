@@ -1,19 +1,19 @@
-# Smart Payment Registration System Backend
+# Smart Payment Registration System Backend (Flask)
 
-Production-ready backend for the Smart Payment Registration System built with Go, Gin, and PostgreSQL.
+Production-ready backend for the Smart Payment Registration System built with Flask, SQLAlchemy, and PostgreSQL.
 
 ## Features
-- Gin REST API with JWT authentication
-- PostgreSQL with SQL migrations (golang-migrate compatible)
+- Flask REST API with JWT authentication
+- PostgreSQL with SQLAlchemy ORM
 - Password hashing with bcrypt
 - Rate limiting on auth endpoints
-- Request ID and structured logging
+- Request ID header support
 - CORS support for the Vue dev server
 - Dashboard-ready filtering, sorting, pagination, and summary stats
 
 ## Prerequisites
-- Docker + Docker Compose
-- (Optional) `migrate` CLI or Docker profile for migrations
+- Python 3.10+
+- PostgreSQL
 
 ## Quick Start
 
@@ -22,14 +22,13 @@ cp .env.example .env
 ```
 
 ```bash
-docker compose up --build
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### Run Migrations
-Using the built-in migrate container:
-
 ```bash
-docker compose --profile tools run --rm migrate
+python app.py
 ```
 
 ### Seed Users
@@ -105,19 +104,9 @@ curl -X GET 'http://localhost:8080/api/v1/transactions/summary?currency=IRR' \
 | --- | --- | --- |
 | `ENV` | `dev` or `prod` | `dev` |
 | `HTTP_ADDR` | HTTP bind address | `:8080` |
-| `DATABASE_URL` | Postgres connection string | `postgres://app:app@localhost:5432/avagostar?sslmode=disable` |
+| `DATABASE_URL` | Postgres connection string | `postgresql+psycopg2://app:app@localhost:5432/avagostar` |
 | `JWT_SECRET` | Secret for signing JWTs | `change-me` |
 | `JWT_EXPIRES_IN` | JWT duration | `1h` |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated list | `http://localhost:5173` |
 | `RATE_LIMIT_PER_MIN` | Rate limit per IP for auth endpoints | `30` |
 | `REQUEST_TIMEOUT` | DB timeout | `5s` |
-
-## Development
-
-Optional Makefile targets:
-
-```bash
-make run
-make migrate-up
-make migrate-down
-```

@@ -100,3 +100,10 @@ docker-compose.override.yml
 # =========================
 coverage/
 *.cover
+
+# =========================
+# Python / Flask
+# =========================
+.venv/
+__pycache__/
+*.pyc
