@@ -19,7 +19,7 @@ services:
     environment:
       ENV: ${ENV:-dev}
       HTTP_ADDR: :8080
-      DATABASE_URL: ${DATABASE_URL:-postgres://app:app@db:5432/avagostar?sslmode=disable}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://app:app@db:5432/avagostar}
       JWT_SECRET: ${JWT_SECRET:-change-me}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
@@ -27,15 +27,6 @@ services:
       REQUEST_TIMEOUT: ${REQUEST_TIMEOUT:-5s}
     ports:
       - "8080:8080"
-    depends_on:
-      - db
-
-  migrate:
-    image: migrate/migrate
-    profiles: ["tools"]
-    volumes:
-      - ./internal/db/migrations:/migrations
-    command: ["-path", "/migrations", "-database", "postgres://app:app@db:5432/avagostar?sslmode=disable", "up"]
     depends_on:
       - db
 
