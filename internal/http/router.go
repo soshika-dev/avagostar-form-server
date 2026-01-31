@@ -30,6 +30,7 @@ func NewRouter(deps Dependencies) *gin.Engine {
 	authHandler := handlers.NewAuthHandler(deps.AuthService)
 	meHandler := handlers.NewMeHandler(deps.UserRepo)
 	txHandler := handlers.NewTransactionHandler(deps.TxService)
+	userHandler := handlers.NewUserHandler(deps.AuthService)
 
 	router.GET("/healthz", handlers.Health)
 
@@ -46,6 +47,7 @@ func NewRouter(deps Dependencies) *gin.Engine {
 	protected.Use(middleware.JWTAuth(middleware.AuthConfig{Secret: deps.Config.JWTSecret}))
 	{
 		protected.GET("/me", meHandler.GetMe)
+		protected.POST("/users", userHandler.Create)
 		protected.POST("/transactions", txHandler.Create)
 		protected.GET("/transactions", txHandler.List)
 		protected.GET("/transactions/summary", txHandler.Summary)

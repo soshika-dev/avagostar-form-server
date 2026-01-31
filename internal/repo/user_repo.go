@@ -70,6 +70,45 @@ func (r *UserRepo) GetByID(ctx context.Context, id string) (*models.User, error)
 	return &user, nil
 }
 
+func (r *UserRepo) ExistsByUsername(ctx context.Context, username string) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, r.timeout)
+	defer cancel()
+
+	row := r.pool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)", username)
+	var exists bool
+	if err := row.Scan(&exists); err != nil {
+		return false, fmt.Errorf("check user exists: %w", err)
+	}
+	return exists, nil
+}
+
+func (r *UserRepo) Create(ctx context.Context, username, role, passwordHash string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, r.timeout)
+	defer cancel()
+
+	row := r.pool.QueryRow(ctx, `
+		INSERT INTO users (username, password_hash, role)
+		VALUES ($1, $2, $3)
+		RETURNING id, username, role, password_hash, reset_code_hash, reset_code_expires_at, created_at, updated_at
+	`, username, passwordHash, role)
+
+	var user models.User
+	if err := row.Scan(
+		&user.ID,
+		&user.Username,
+		&user.Role,
+		&user.PasswordHash,
+		&user.ResetCodeHash,
+		&user.ResetCodeExpiresAt,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	); err != nil {
+		return nil, fmt.Errorf("create user: %w", err)
+	}
+
+	return &user, nil
+}
+
 func (r *UserRepo) UpdateResetCode(ctx context.Context, userID string, codeHash *string, expiresAt *time.Time) error {
 	ctx, cancel := context.WithTimeout(ctx, r.timeout)
 	defer cancel()

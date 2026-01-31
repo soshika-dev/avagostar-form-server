@@ -134,6 +134,32 @@ func (s *AuthService) ResetPassword(ctx context.Context, username, code, newPass
 	return nil
 }
 
+func (s *AuthService) CreateUser(ctx context.Context, username, password, role string) (*models.User, error) {
+	if len(password) < s.cfg.PasswordMinLen {
+		return nil, utils.NewAppError(400, "VALIDATION_ERROR", fmt.Sprintf("password must be at least %d characters", s.cfg.PasswordMinLen), nil)
+	}
+
+	exists, err := s.users.ExistsByUsername(ctx, username)
+	if err != nil {
+		return nil, utils.NewAppError(500, "INTERNAL_ERROR", "could not check existing users", nil)
+	}
+	if exists {
+		return nil, utils.NewAppError(409, "CONFLICT", "username already exists", nil)
+	}
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, utils.NewAppError(500, "INTERNAL_ERROR", "could not secure password", nil)
+	}
+
+	user, err := s.users.Create(ctx, username, role, string(passwordHash))
+	if err != nil {
+		return nil, utils.NewAppError(500, "INTERNAL_ERROR", "could not create user", nil)
+	}
+
+	return user, nil
+}
+
 func (s *AuthService) generateToken(user *models.User) (string, int64, error) {
 	issuedAt := time.Now()
 	expiresAt := issuedAt.Add(s.cfg.JWTExpiry)
