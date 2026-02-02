@@ -1,10 +1,10 @@
 # Smart Payment Registration System Backend (Flask)
 
-Production-ready backend for the Smart Payment Registration System built with Flask, SQLAlchemy, and PostgreSQL.
+Production-ready backend for the Smart Payment Registration System built with Flask and SQLAlchemy, using SQLite by default (PostgreSQL supported via configuration).
 
 ## Features
 - Flask REST API with JWT authentication
-- PostgreSQL with SQLAlchemy ORM
+- SQLite (default) or PostgreSQL via SQLAlchemy ORM
 - Password hashing with bcrypt
 - Rate limiting on auth endpoints
 - Request ID header support
@@ -13,7 +13,6 @@ Production-ready backend for the Smart Payment Registration System built with Fl
 
 ## Prerequisites
 - Python 3.10+
-- PostgreSQL
 
 ## Quick Start
 
@@ -30,6 +29,8 @@ pip install -r requirements.txt
 ```bash
 python app.py
 ```
+
+SQLite is the default database and stores data in `avagostar.db` in the project root. To use PostgreSQL instead, set `DATABASE_URL` to a PostgreSQL connection string.
 
 ### Seed Users
 Demo users are seeded automatically on API startup:
@@ -104,7 +105,7 @@ curl -X GET 'http://localhost:8080/api/v1/transactions/summary?currency=IRR' \
 | --- | --- | --- |
 | `ENV` | `dev` or `prod` | `dev` |
 | `HTTP_ADDR` | HTTP bind address | `:8080` |
-| `DATABASE_URL` | Postgres connection string | `postgresql+psycopg2://app:app@localhost:5432/avagostar` |
+| `DATABASE_URL` | Database connection string | `sqlite:///./avagostar.db` |
 | `JWT_SECRET` | Secret for signing JWTs | `change-me` |
 | `JWT_EXPIRES_IN` | JWT duration | `1h` |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated list | `http://localhost:5173` |
