@@ -14,6 +14,9 @@ class UserRepository:
     def exists_username(self, username: str) -> bool:
         return self.db.query(User).filter(User.username == username).first() is not None
 
+    def count(self) -> int:
+        return self.db.query(User).count()
+
     def add(self, user: User) -> None:
         self.db.add(user)
 
