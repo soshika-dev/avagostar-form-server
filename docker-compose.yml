@@ -1,25 +1,13 @@
 version: "3.9"
 
 services:
-  db:
-    image: postgres:15
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
-      POSTGRES_DB: ${POSTGRES_DB:-avagostar}
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
   api:
     build: .
     restart: unless-stopped
     environment:
       ENV: ${ENV:-dev}
       HTTP_ADDR: :8080
-      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://app:app@db:5432/avagostar}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////data/avagostar.db}
       JWT_SECRET: ${JWT_SECRET:-change-me}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
@@ -27,8 +15,8 @@ services:
       REQUEST_TIMEOUT: ${REQUEST_TIMEOUT:-5s}
     ports:
       - "8080:8080"
-    depends_on:
-      - db
+    volumes:
+      - avagostar_data:/data
 
 volumes:
-  db_data:
+  avagostar_data:

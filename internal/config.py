@@ -10,7 +10,7 @@ class Config:
         self.http_addr = os.getenv("HTTP_ADDR", ":8080")
         self.db_url = os.getenv(
             "DATABASE_URL",
-            "postgresql+psycopg2://app:app@localhost:5432/avagostar",
+            "sqlite:///./avagostar.db",
         )
         self.jwt_secret = os.getenv("JWT_SECRET", "change-me")
         self.jwt_expires_in = os.getenv("JWT_EXPIRES_IN", "1h")
