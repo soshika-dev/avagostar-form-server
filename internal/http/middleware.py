@@ -1,10 +1,10 @@
 import uuid
 from functools import wraps
 
-import jwt
 from flask import g, request
 
 from internal.http.responses import error_response
+from internal.services import jwt_service
 
 
 def register_middleware(app, get_db, rate_limiter, cfg) -> None:
@@ -37,8 +37,8 @@ def require_auth(cfg):
                 return error_response(401, "UNAUTHORIZED", "missing token")
             token = auth_header.split(" ", 1)[1]
             try:
-                payload = jwt.decode(token, cfg.jwt_secret, algorithms=["HS256"])
-            except jwt.PyJWTError:
+                payload = jwt_service.decode_token(token, cfg.jwt_secret, algorithms=["HS256"])
+            except jwt_service.JwtError:
                 return error_response(401, "UNAUTHORIZED", "invalid token")
             g.user_id = payload.get("user_id")
             g.username = payload.get("username")
