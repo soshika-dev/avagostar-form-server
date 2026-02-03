@@ -2,9 +2,8 @@ import os
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
-import jwt
-
 from internal.models import User
+from internal.services import jwt_service
 
 
 def hash_password(password: str) -> str:
@@ -26,7 +25,7 @@ def generate_token(user: User, jwt_secret: str, expires_in: int) -> tuple[str, i
         "exp": expires_at,
         "sub": user.id,
     }
-    token = jwt.encode(payload, jwt_secret, algorithm="HS256")
+    token = jwt_service.encode_token(payload, jwt_secret, algorithm="HS256")
     return token, expires_in
 
 
