@@ -17,12 +17,14 @@ def verify_password(password: str, password_hash: str) -> bool:
 def generate_token(user: User, jwt_secret: str, expires_in: int) -> tuple[str, int]:
     issued_at = datetime.now(timezone.utc)
     expires_at = issued_at + timedelta(seconds=expires_in)
+    issued_at_ts = int(issued_at.timestamp())
+    expires_at_ts = int(expires_at.timestamp())
     payload = {
         "user_id": user.id,
         "username": user.username,
         "role": user.role,
-        "iat": issued_at,
-        "exp": expires_at,
+        "iat": issued_at_ts,
+        "exp": expires_at_ts,
         "sub": user.id,
     }
     token = jwt_service.encode_token(payload, jwt_secret, algorithm="HS256")
