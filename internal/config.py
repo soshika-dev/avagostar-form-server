@@ -14,11 +14,15 @@ class Config:
         )
         self.jwt_secret = os.getenv("JWT_SECRET", "change-me")
         self.jwt_expires_in = os.getenv("JWT_EXPIRES_IN", "1h")
-        self.allowed_origins = [
+        allowed_origins = [
             origin.strip()
-            for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+            for origin in os.getenv("CORS_ALLOWED_ORIGINS", "*").split(",")
             if origin.strip()
         ]
+        if "*" in allowed_origins:
+            self.allowed_origins = "*"
+        else:
+            self.allowed_origins = allowed_origins
         self.rate_limit_per_minute = int(os.getenv("RATE_LIMIT_PER_MIN", "30"))
         self.request_timeout = os.getenv("REQUEST_TIMEOUT", "5s")
         self.password_min_len = 8 if self.env == "prod" else 4
