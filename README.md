@@ -10,6 +10,7 @@ Production-ready backend for the Smart Payment Registration System built with Fl
 - Request ID header support
 - CORS support for the Vue dev server
 - Dashboard-ready filtering, sorting, pagination, and summary stats
+- Dashboard transaction amounts are normalized to USD in list/summary responses (with original currency fields preserved on list/detail)
 
 ## Prerequisites
 - Python 3.10+

@@ -5,6 +5,16 @@ from sqlalchemy import func
 from internal.models import Transaction
 
 
+USD_EXCHANGE_RATES = {
+    "USD": 1.0,
+    "EUR": 1.09,
+    "AED": 0.2723,
+    "TRY": 0.031,
+    "IRR": 0.000012,
+    "IRT": 0.00012,
+}
+
+
 def parse_datetime_iso(value: str) -> datetime | None:
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -15,8 +25,17 @@ def parse_datetime_iso(value: str) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
-def transaction_to_response(tx: Transaction) -> dict:
-    return {
+def amount_in_usd(amount: float, currency: str) -> float:
+    rate = USD_EXCHANGE_RATES.get(currency)
+    if not rate:
+        return amount
+    return amount * rate
+
+
+def transaction_to_response(tx: Transaction, normalize_currency: bool = False) -> dict:
+    amount = tx.amount
+    currency = tx.currency
+    response = {
         "id": tx.id,
         "created_by_user_id": tx.created_by_user_id,
         "receiver_type": tx.receiver_type,
@@ -26,8 +45,8 @@ def transaction_to_response(tx: Transaction) -> dict:
         "payer_name": tx.payer_name,
         "payer_id": tx.payer_id,
         "payment_method": tx.payment_method,
-        "currency": tx.currency,
-        "amount": tx.amount,
+        "currency": currency,
+        "amount": amount,
         "description": tx.description,
         "datetime_iso": tx.datetime_utc.astimezone(timezone.utc)
         .isoformat()
@@ -36,6 +55,14 @@ def transaction_to_response(tx: Transaction) -> dict:
         "created_at": tx.created_at,
         "updated_at": tx.updated_at,
     }
+
+    if normalize_currency:
+        response["original_currency"] = currency
+        response["original_amount"] = amount
+        response["currency"] = "USD"
+        response["amount"] = amount_in_usd(amount, currency)
+
+    return response
 
 
 def apply_transaction_filters(query, params):
