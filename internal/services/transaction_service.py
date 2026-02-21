@@ -14,6 +14,8 @@ USD_EXCHANGE_RATES = {
     "IRT": 0.00012,
 }
 
+BASE_NORMALIZATION_CURRENCY = "AED"
+
 
 def set_usd_exchange_rates(custom_rates: dict[str, float] | None) -> None:
     if not custom_rates:
@@ -36,6 +38,14 @@ def amount_in_usd(amount: float, currency: str) -> float:
     if not rate:
         return amount
     return amount * rate
+
+
+def amount_in_aed(amount: float, currency: str) -> float:
+    amount_usd = amount_in_usd(amount, currency)
+    aed_rate = USD_EXCHANGE_RATES.get(BASE_NORMALIZATION_CURRENCY)
+    if not aed_rate:
+        return amount_usd
+    return amount_usd / aed_rate
 
 
 def transaction_to_response(tx: Transaction, normalize_currency: bool = False) -> dict:
@@ -65,8 +75,8 @@ def transaction_to_response(tx: Transaction, normalize_currency: bool = False) -
     if normalize_currency:
         response["original_currency"] = currency
         response["original_amount"] = amount
-        response["currency"] = "USD"
-        response["amount"] = amount_in_usd(amount, currency)
+        response["currency"] = BASE_NORMALIZATION_CURRENCY
+        response["amount"] = amount_in_aed(amount, currency)
 
     return response
 
