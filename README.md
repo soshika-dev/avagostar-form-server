@@ -11,6 +11,7 @@ Production-ready backend for the Smart Payment Registration System built with Fl
 - CORS support for the Vue dev server
 - Dashboard-ready filtering, sorting, pagination, and summary stats
 - Dashboard transaction amounts are normalized to USD in list/summary responses (with original currency fields preserved on list/detail)
+- USD conversion rates can be overridden via `USD_EXCHANGE_RATES` env var to keep rates current without code changes
 
 ## Prerequisites
 - Python 3.10+
@@ -112,3 +113,4 @@ curl -X GET 'http://localhost:8080/api/v1/transactions/summary?currency=IRR' \
 | `CORS_ALLOWED_ORIGINS` | Comma-separated list | `http://localhost:5173` |
 | `RATE_LIMIT_PER_MIN` | Rate limit per IP for auth endpoints | `30` |
 | `REQUEST_TIMEOUT` | DB timeout | `5s` |
+| `USD_EXCHANGE_RATES` | JSON object of currency->USD rates (example: `{"EUR":1.17,"AED":0.2723}`) | _unset_ (uses built-in defaults) |

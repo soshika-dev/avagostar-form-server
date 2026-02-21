@@ -1,3 +1,4 @@
+import json
 import os
 
 from dotenv import load_dotenv
@@ -27,6 +28,7 @@ class Config:
         self.request_timeout = os.getenv("REQUEST_TIMEOUT", "5s")
         self.password_min_len = 8 if self.env == "prod" else 4
         self.enable_dev_reset_codes = self.env != "prod"
+        self.usd_exchange_rates = self._usd_exchange_rates()
 
         if not self.jwt_secret:
             raise ValueError("JWT_SECRET is required")
@@ -40,3 +42,21 @@ class Config:
         if raw.endswith("s"):
             return int(float(raw[:-1]))
         return int(raw)
+
+    def _usd_exchange_rates(self) -> dict[str, float]:
+        raw = os.getenv("USD_EXCHANGE_RATES", "").strip()
+        if not raw:
+            return {}
+
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise ValueError("USD_EXCHANGE_RATES must be valid JSON") from exc
+
+        if not isinstance(parsed, dict):
+            raise ValueError("USD_EXCHANGE_RATES must be a JSON object")
+
+        rates = {}
+        for currency, rate in parsed.items():
+            rates[str(currency).upper()] = float(rate)
+        return rates

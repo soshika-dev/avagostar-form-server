@@ -7,12 +7,18 @@ from internal.models import Transaction
 
 USD_EXCHANGE_RATES = {
     "USD": 1.0,
-    "EUR": 1.09,
+    "EUR": 1.17,
     "AED": 0.2723,
     "TRY": 0.031,
     "IRR": 0.000012,
     "IRT": 0.00012,
 }
+
+
+def set_usd_exchange_rates(custom_rates: dict[str, float] | None) -> None:
+    if not custom_rates:
+        return
+    USD_EXCHANGE_RATES.update(custom_rates)
 
 
 def parse_datetime_iso(value: str) -> datetime | None:
