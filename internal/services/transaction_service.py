@@ -9,11 +9,11 @@ from internal.models import Transaction
 
 USD_EXCHANGE_RATES = {
     "USD": 1.0,
-    "EUR": 1.17,
-    "AED": 0.2723,
-    "TRY": 0.031,
-    "IRR": 0.000012,
-    "IRT": 0.00012,
+    "EUR": 0.85,
+    "AED": 3.6725,
+    "TRY": 43.85,
+    "IRR": 1284718.0,
+    "IRT": 128471.8,
 }
 
 BASE_NORMALIZATION_CURRENCY = "AED"
@@ -60,7 +60,7 @@ def amount_in_usd(amount: float, currency: str) -> float:
     rate = USD_EXCHANGE_RATES.get(currency)
     if not rate:
         return amount
-    return amount * rate
+    return amount / rate
 
 
 def amount_in_aed(amount: float, currency: str) -> float:
@@ -68,7 +68,7 @@ def amount_in_aed(amount: float, currency: str) -> float:
     aed_rate = USD_EXCHANGE_RATES.get(BASE_NORMALIZATION_CURRENCY)
     if not aed_rate:
         return amount_usd
-    return amount_usd / aed_rate
+    return amount_usd * aed_rate
 
 
 def transaction_to_response(tx: Transaction, normalize_currency: bool = False) -> dict:
