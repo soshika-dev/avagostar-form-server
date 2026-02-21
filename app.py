@@ -10,4 +10,5 @@ if __name__ == "__main__":
         if port_str:
             port = int(port_str)
     app = create_app()
-    app.run(host=host, port=port, debug=config.env != "prod")
+    # app.run(host=host, port=port, debug=config.env != "prod")
+    app.run(host="127.0.0.1", port=5001, debug=False)

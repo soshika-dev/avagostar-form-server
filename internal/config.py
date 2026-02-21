@@ -7,7 +7,7 @@ class Config:
     def __init__(self) -> None:
         load_dotenv()
         self.env = os.getenv("ENV", "dev")
-        self.http_addr = os.getenv("HTTP_ADDR", ":8080")
+        self.http_addr = os.getenv("HTTP_ADDR", ":5001")
         self.db_url = os.getenv(
             "DATABASE_URL",
             "sqlite:///./avagostar.db",

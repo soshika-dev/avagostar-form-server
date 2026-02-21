@@ -33,6 +33,13 @@ def register_transaction_routes(app, cfg, get_db):
             "datetime_iso",
             "timezone",
         ]
+        data['receiver_type'] = data['receiver']['type']
+        data['receiver_name'] = data['receiver']['name']
+        data['payer_type'] = data['payer']['type']
+        data['payer_name'] = data['payer']['name']
+        data['payment_method'] = data['paymentMethod']
+        data['datetime_iso'] = data['datetimeISO']
+        data['timezone'] = 'America/New_York'
         validation = validate_required(data, required_fields)
         if validation:
             return validation
