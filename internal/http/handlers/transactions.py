@@ -5,6 +5,7 @@ from internal.http.responses import error_response, validate_required
 from internal.models import Transaction
 from internal.repositories.transaction_repo import TransactionRepository
 from internal.services.transaction_service import (
+    amount_in_usd,
     apply_transaction_filters,
     parse_datetime_iso,
     transaction_to_response,
@@ -111,7 +112,7 @@ def register_transaction_routes(app, cfg, get_db):
         per_page = int(params.get("per_page", 10))
         total = repo.count(query)
         items = query.limit(per_page).offset((page - 1) * per_page).all()
-        data = [transaction_to_response(tx) for tx in items]
+        data = [transaction_to_response(tx, normalize_currency=True) for tx in items]
         total_pages = (total + per_page - 1) // per_page
         return jsonify(
             {
@@ -136,22 +137,21 @@ def register_transaction_routes(app, cfg, get_db):
             base_query = apply_transaction_filters(base_query, params)
         except ValueError as exc:
             return error_response(400, "VALIDATION_ERROR", str(exc))
-        total_amount = repo.total_amount(base_query)
-        avg_amount = repo.avg_amount(base_query)
-        count = repo.count(base_query)
+        all_items = base_query.all()
+        count = len(all_items)
+        total_amount = sum(amount_in_usd(tx.amount, tx.currency) for tx in all_items)
+        avg_amount = (total_amount / count) if count else 0.0
 
-        monthly_rows = repo.monthly_totals(base_query)
-        monthly_map = {month: amount for month, amount in monthly_rows}
+        monthly_map = {}
+        for tx in all_items:
+            month = tx.datetime_utc.strftime("%m")
+            monthly_map[month] = monthly_map.get(month, 0.0) + amount_in_usd(tx.amount, tx.currency)
         monthly = [
             {"month": f"{i:02d}", "amount": monthly_map.get(f"{i:02d}", 0.0)}
             for i in range(1, 13)
         ]
 
-        currency_rows = repo.totals_by_currency(base_query)
-        by_currency = []
-        for currency, amount in currency_rows:
-            percent = (amount / total_amount * 100) if total_amount else 0.0
-            by_currency.append({"currency": currency, "amount": amount, "percent": percent})
+        by_currency = [{"currency": "USD", "amount": total_amount, "percent": 100.0 if total_amount else 0.0}]
 
         return jsonify(
             {
@@ -169,7 +169,7 @@ def register_transaction_routes(app, cfg, get_db):
         tx = repo.by_id_and_user(tx_id, g.user_id)
         if not tx:
             return error_response(404, "NOT_FOUND", "transaction not found")
-        return jsonify(transaction_to_response(tx))
+        return jsonify(transaction_to_response(tx, normalize_currency=True))
 
     @app.delete("/api/v1/transactions/<tx_id>")
     @require_auth(cfg)
