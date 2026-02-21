@@ -7,12 +7,13 @@ from internal.http.middleware import register_middleware
 from internal.http.routes import register_routes
 from internal.rate_limiter import RateLimiter
 from internal.repositories.user_repo import UserRepository
-from internal.services.transaction_service import set_usd_exchange_rates
+from internal.services.transaction_service import fetch_usd_exchange_rates, set_usd_exchange_rates
 from internal.services.user_service import seed_users
 
 
 def create_app() -> Flask:
     cfg = Config()
+    set_usd_exchange_rates(fetch_usd_exchange_rates())
     set_usd_exchange_rates(cfg.usd_exchange_rates)
     app = Flask(__name__)
     app.config["APP_CONFIG"] = cfg

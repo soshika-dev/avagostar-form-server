@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta, timezone
+import json
+from urllib import error, request
 
 from sqlalchemy import func
 
@@ -15,12 +17,33 @@ USD_EXCHANGE_RATES = {
 }
 
 BASE_NORMALIZATION_CURRENCY = "AED"
+EXCHANGE_RATES_API_URL = "https://open.er-api.com/v6/latest/USD"
 
 
 def set_usd_exchange_rates(custom_rates: dict[str, float] | None) -> None:
     if not custom_rates:
         return
     USD_EXCHANGE_RATES.update(custom_rates)
+
+
+def fetch_usd_exchange_rates() -> dict[str, float]:
+    try:
+        with request.urlopen(EXCHANGE_RATES_API_URL, timeout=5) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (error.URLError, TimeoutError, json.JSONDecodeError):
+        return {}
+
+    rates = payload.get("rates")
+    if not isinstance(rates, dict):
+        return {}
+
+    parsed = {}
+    for currency, rate in rates.items():
+        try:
+            parsed[str(currency).upper()] = float(rate)
+        except (TypeError, ValueError):
+            continue
+    return parsed
 
 
 def parse_datetime_iso(value: str) -> datetime | None:
