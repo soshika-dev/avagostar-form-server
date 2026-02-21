@@ -5,7 +5,8 @@ from internal.http.responses import error_response, validate_required
 from internal.models import Transaction
 from internal.repositories.transaction_repo import TransactionRepository
 from internal.services.transaction_service import (
-    amount_in_usd,
+    BASE_NORMALIZATION_CURRENCY,
+    amount_in_aed,
     apply_transaction_filters,
     parse_datetime_iso,
     transaction_to_response,
@@ -139,19 +140,19 @@ def register_transaction_routes(app, cfg, get_db):
             return error_response(400, "VALIDATION_ERROR", str(exc))
         all_items = base_query.all()
         count = len(all_items)
-        total_amount = sum(amount_in_usd(tx.amount, tx.currency) for tx in all_items)
+        total_amount = sum(amount_in_aed(tx.amount, tx.currency) for tx in all_items)
         avg_amount = (total_amount / count) if count else 0.0
 
         monthly_map = {}
         for tx in all_items:
             month = tx.datetime_utc.strftime("%m")
-            monthly_map[month] = monthly_map.get(month, 0.0) + amount_in_usd(tx.amount, tx.currency)
+            monthly_map[month] = monthly_map.get(month, 0.0) + amount_in_aed(tx.amount, tx.currency)
         monthly = [
             {"month": f"{i:02d}", "amount": monthly_map.get(f"{i:02d}", 0.0)}
             for i in range(1, 13)
         ]
 
-        by_currency = [{"currency": "USD", "amount": total_amount, "percent": 100.0 if total_amount else 0.0}]
+        by_currency = [{"currency": BASE_NORMALIZATION_CURRENCY, "amount": total_amount, "percent": 100.0 if total_amount else 0.0}]
 
         return jsonify(
             {
