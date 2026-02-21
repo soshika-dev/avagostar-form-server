@@ -20,9 +20,8 @@ def create_user(repo: UserRepository, username: str, role: str, password: str) -
 
 def seed_users(repo: UserRepository) -> None:
     seeds = [
-        {"username": "admin", "password": "admin123", "role": "admin"},
-        {"username": "user1", "password": "1111", "role": "user"},
-        {"username": "user2", "password": "2222", "role": "user"},
+        {"username": "qamari", "password": "Qamari@123$", "role": "admin"},
+        {"username": "sedaqati", "password": "Sedaqati@123$", "role": "user"},
     ]
     for seed in seeds:
         if repo.exists_username(seed["username"]):
