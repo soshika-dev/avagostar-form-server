@@ -36,9 +36,8 @@ SQLite is the default database and stores data in `avagostar.db` in the project 
 
 ### Seed Users
 Demo users are seeded automatically on API startup:
-- `admin` / `admin123`
-- `user1` / `1111`
-- `user2` / `2222`
+- `qamari` / `Qamari@123$`
+- `sedaqati` / `Sedaqati@123$`
 
 ## API Endpoints
 
@@ -51,21 +50,21 @@ curl http://localhost:8080/healthz
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"admin123"}'
+  -d '{"username":"qamari","password":"Qamari@123$"}'
 ```
 
 ### Forgot Password (dev returns code)
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/forgot \
   -H 'Content-Type: application/json' \
-  -d '{"username":"admin"}'
+  -d '{"username":"qamari"}'
 ```
 
 ### Reset Password
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/reset \
   -H 'Content-Type: application/json' \
-  -d '{"username":"admin","code":"123456","new_password":"NewPass123!"}'
+  -d '{"username":"qamari","code":"123456","new_password":"NewPass123!"}'
 ```
 
 ### Create Transaction
